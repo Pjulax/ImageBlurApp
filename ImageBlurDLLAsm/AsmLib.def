@@ -1,0 +1,4 @@
+LIBRARY "ImageBlurDLLAsm"
+EXPORTS
+MyProc1
+MyProc2
