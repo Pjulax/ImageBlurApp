@@ -77,8 +77,46 @@ bool ImageHandler::loadImagePart()
 
 void ImageHandler::blurImage()
 {
-	
-	for (int i = 0; i < bitmapHeader.width * bitmapHeader.height * 3; i++) {
-		outputPixelArray[i] = inputPixelArray[i];
+	uint32_t temp = 0;
+	int divider = 0;
+	for (int line = 0; line < bitmapHeader.height; line++) {
+		for (int column = 0; column < bitmapHeader.width * 3; column++) {
+			temp = inputPixelArray[line * bitmapHeader.width * 3 + column];
+			divider++;
+			if (line > 0) {
+				temp += inputPixelArray[(line - 1) * bitmapHeader.width * 3 + column];
+				divider++;
+				if (column > 2) {
+					temp += inputPixelArray[(line - 1) * bitmapHeader.width * 3 + column - 3];
+					divider++;
+				}
+				if (column < bitmapHeader.width * 3 - 4) {
+					temp += inputPixelArray[(line - 1) * bitmapHeader.width * 3 + column + 3];
+					divider++;
+				}
+			}
+			if (column > 2) {
+				temp += inputPixelArray[line * bitmapHeader.width * 3 + column - 3];
+				divider++;
+			}
+			if (column < bitmapHeader.width * 3 - 4) {
+				temp += inputPixelArray[line * bitmapHeader.width * 3 + column + 3];
+				divider++;
+			}
+			if (line < bitmapHeader.height - 1) {
+				temp += inputPixelArray[(line + 1) * bitmapHeader.width * 3 + column];
+				divider++;
+				if (column > 2){
+					temp += inputPixelArray[(line + 1) * bitmapHeader.width * 3 + column - 3];
+					divider++;
+				}
+				if (column < bitmapHeader.width * 3 - 4){
+					temp += inputPixelArray[(line + 1) * bitmapHeader.width * 3 + column + 3];
+					divider++;
+				}
+			}
+			outputPixelArray[line * bitmapHeader.width * 3 + column] = temp/divider;
+			divider = 0;
+		}
 	}
 }
