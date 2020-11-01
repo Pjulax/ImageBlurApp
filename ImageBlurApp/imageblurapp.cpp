@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include <thread>
 
-#include "bmpfile.h"
+#include "imageHandler.h"
 #include "windows.h"
 
 QBarSet* set0 = new QBarSet("Red");
@@ -30,7 +30,7 @@ ImageBlurApp::ImageBlurApp(QWidget *parent)
     threadText.push_back(" watkow");
     ui.threadLabel->setText(threadText);
     performanceCounter = PerformanceCounter();
-
+    
 
     for (int i = 0; i < 128; i++) {
         *set0 << i%75;
@@ -101,11 +101,19 @@ void ImageBlurApp::on_fileSavePathButton_clicked()
 
 void ImageBlurApp::on_cppButton_clicked()
 {
+    ui.asmButton->setDisabled(true);
     performanceCounter.startCounting();
 
+    image = new ImageHandler(bmpInputFilepath.toStdString(), bmpOutputFilepath.toStdString());
+    image->loadImagePart();
+    image->blurImage();
+    image->saveHeader();
+    image->saveImagePart(0,0);
 
-    //ui.asmButton->setDisabled(true);
-    //Bitmap bitmap(ui.fileSavePathEdit->text().toStdString());
+    performanceCounter.stopCounting();
+    if (performanceCounter.calculateTime()) {
+        ui.cppTimeLabel->setText(QString().fromStdString(performanceCounter.getTime()));
+    }
 }
 
 void ImageBlurApp::on_asmButton_clicked()
@@ -150,7 +158,7 @@ void ImageBlurApp::on_asmButton_clicked()
 
 void ImageBlurApp::on_endButton_clicked()
 {
-
+    delete this->image;
     this->close();
 }
 

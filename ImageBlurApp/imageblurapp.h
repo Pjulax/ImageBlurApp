@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "PerformanceCounter.h"
+#include "imageHandler.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -29,6 +30,7 @@ private:
     QString bmpOutputFilepath;
     bool isLoadPathAssigned = false;
     bool isSavePathAssigned = false;
+    ImageHandler* image;
     // computer threads count
     unsigned int processor_count;
     // time counter

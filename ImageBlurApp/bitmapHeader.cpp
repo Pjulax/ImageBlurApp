@@ -3,12 +3,12 @@
 BitmapHeader::BitmapHeader(std::string filepath)
 {
 	std::ifstream image( filepath, std::ios::binary );
-	if (image)
+	if (image.is_open())
 	{
-		bitmapHeader = new unsigned char[BITMAP_HEADER_LENGTH];
-		image.read((char*)bitmapHeader, BITMAP_HEADER_LENGTH);
+		header = new unsigned char[BITMAP_HEADER_LENGTH];
+		image.read((char*)header, BITMAP_HEADER_LENGTH);
 
-		std::memcpy(&imageDataOffset, &bitmapHeader[10], sizeof(int));
+		std::memcpy(&imageDataOffset, &header[10], sizeof(int));
 
 		uint16_t DIBLength = imageDataOffset - BITMAP_HEADER_LENGTH;
 
