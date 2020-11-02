@@ -44,7 +44,7 @@ bool ImageHandler::saveImagePart(uint32_t startIndx, uint32_t endIndx)
 			// write line of pixels
 			image.write((char*)(outputPixelArray + (i * bitmapHeader.width*3)), bitmapHeader.width*3);
 			// write padding
-			if (paddingChars != nullptr && paddingNum > 0) {
+			if (paddingChars != nullptr && paddingNum > 0 && paddingNum < 4) {
 				
 				image.write((char*)paddingChars, paddingNum);
 			}
@@ -65,7 +65,7 @@ bool ImageHandler::loadImagePart()
 		image.seekg(bitmapHeader.imageDataOffset);
 		for (int i = 0; i < bitmapHeader.height; i++) {
 			image.read((char*)inputPixelArray + (i * bitmapHeader.width*3), (bitmapHeader.width * 3));
-			if(!image.eof())
+			if(!image.eof() && paddingNum < 4)
 				image.seekg(paddingNum, std::ios::cur);
 		}
 		image.close();
@@ -119,4 +119,28 @@ void ImageHandler::blurImage()
 			divider = 0;
 		}
 	}
+}
+
+uint32_t* ImageHandler::inputHistogramCalc()
+{
+	return histogramCalc(this->inputPixelArray);
+}
+
+uint32_t* ImageHandler::outputHistogramCalc()
+{
+	return histogramCalc(this->outputPixelArray);
+}
+
+uint32_t* ImageHandler::histogramCalc(unsigned char* pixelArray)
+{
+	uint32_t* BGR = new uint32_t[768]{ 0 };
+	if (pixelArray != nullptr) {
+		for (int pixel = 0; pixel < bitmapHeader.height * bitmapHeader.width * 3; pixel+=3) {
+			BGR[pixelArray[pixel]]++;
+			BGR[pixelArray[pixel+1]+256]++;
+			BGR[pixelArray[pixel+2]+512]++;
+		}
+		return BGR;
+	}
+	return nullptr;
 }

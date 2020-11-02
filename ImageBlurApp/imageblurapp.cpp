@@ -6,15 +6,7 @@
 #include "imageHandler.h"
 #include "windows.h"
 
-QBarSet* set0 = new QBarSet("Red");
-QBarSet* set1 = new QBarSet("Green");
-QBarSet* set2 = new QBarSet("Blue");
 
-QBarSeries* series = new QBarSeries();
-
-QStringList categories;
-QValueAxis* axisX = new QValueAxis();
-QValueAxis* axisY = new QValueAxis();
 
 
 ImageBlurApp::ImageBlurApp(QWidget *parent)
@@ -30,40 +22,6 @@ ImageBlurApp::ImageBlurApp(QWidget *parent)
     threadText.push_back(" watkow");
     ui.threadLabel->setText(threadText);
     performanceCounter = PerformanceCounter();
-    
-
-    for (int i = 0; i < 128; i++) {
-        *set0 << i%75;
-        *set1 << (i%35)+31;
-        *set2 << (i+31)%97;
-    }
-    set0->setColor(QColor(255,0,0));
-    set1->setColor(QColor(0,255,0));
-    set2->setColor(QColor(0,0,255));
-    series->append(set0);
-    series->append(set1);
-    series->append(set2);
-
-    chartInput->addSeries(series);
-    chartInput->setTitle("Histogram obrazu wejsciowego");
-    chartInput->setAnimationOptions(QChart::SeriesAnimations);
-
-    for (int i = 0; i < 128; i++) {
-        categories << QString().fromStdString(std::to_string(i));
-    }
-
-    axisY->setRange(0, 100);
-    chartInput->addAxis(axisY, Qt::AlignLeft);
-    axisX->setRange(0, 255);
-    axisX->setTickCount(17);
-    axisX->setLabelFormat("%i");
-    chartInput->addAxis(axisX, Qt::AlignBottom);
-    chartInput->legend()->setVisible(true);
-    chartInput->legend()->setAlignment(Qt::AlignBottom);
-    series->setBarWidth(1);
-    ui.graphicsView->setChart(chartInput);
-    ui.graphicsView->setRenderHint(QPainter::Antialiasing);
-    ui.asmButton->setEnabled(true);
 }
 
 void ImageBlurApp::on_fileLoadPathButton_clicked()
@@ -106,9 +64,12 @@ void ImageBlurApp::on_cppButton_clicked()
 
     image = new ImageHandler(bmpInputFilepath.toStdString(), bmpOutputFilepath.toStdString());
     image->loadImagePart();
+    uint32_t* inputBGR = image->inputHistogramCalc();
     image->blurImage();
+    uint32_t* outputBGR = image->outputHistogramCalc();
     image->saveHeader();
     image->saveImagePart(0,0);
+    createCharts(inputBGR, outputBGR);
 
     performanceCounter.stopCounting();
     if (performanceCounter.calculateTime()) {
@@ -178,6 +139,104 @@ void ImageBlurApp::on_histogramButton_clicked()
         isShownGraphic1 = true;
         isShownGraphic2 = false;
     }
+}
+
+void ImageBlurApp::createCharts(uint32_t* inputSet, uint32_t* outputSet)
+{
+    QChart* chartInput = new QChart();
+    QChart* chartOutput = new QChart();
+
+    QBarSet* set0In = new QBarSet("Red");
+    QBarSet* set1In = new QBarSet("Green");
+    QBarSet* set2In = new QBarSet("Blue");
+    QBarSeries* seriesIn = new QBarSeries();
+    QValueAxis* axisXIn = new QValueAxis();
+    QValueAxis* axisYIn = new QValueAxis();
+
+    QBarSet* set0Out = new QBarSet("Red");
+    QBarSet* set1Out = new QBarSet("Green");
+    QBarSet* set2Out = new QBarSet("Blue");
+    QBarSeries* seriesOut = new QBarSeries();
+    QValueAxis* axisXOut = new QValueAxis();
+    QValueAxis* axisYOut = new QValueAxis();
+
+// ========= chart 1 =========================
+
+    uint32_t maxIn = 0;
+    for (int i = 0; i < 769; i++) {
+        if (inputSet[i] > maxIn) {
+            maxIn = inputSet[i];
+        }
+    }
+
+    for (int i = 0; i < 256; i++) {
+        *set0In << inputSet[i + 512];
+        *set1In << inputSet[i + 256];
+        *set2In << inputSet[i];
+        
+    }
+
+    set0In->setColor(QColor(255, 0, 0));
+    set1In->setColor(QColor(0, 255, 0));
+    set2In->setColor(QColor(0, 0, 255));
+    seriesIn->append(set0In);
+    seriesIn->append(set1In);
+    seriesIn->append(set2In);
+
+    chartInput->addSeries(seriesIn);
+    chartInput->setTitle("Histogram obrazu wejsciowego");
+    chartInput->setAnimationOptions(QChart::SeriesAnimations);
+
+    axisYIn->setRange(0, maxIn);
+    chartInput->addAxis(axisYIn, Qt::AlignLeft);
+    axisXIn->setRange(0, 255);
+    axisXIn->setTickCount(17);
+    axisXIn->setLabelFormat("%i");
+    chartInput->addAxis(axisXIn, Qt::AlignBottom);
+    chartInput->legend()->setVisible(true);
+    chartInput->legend()->setAlignment(Qt::AlignBottom);
+    seriesIn->setBarWidth(1.1);
+    ui.graphicsView->setChart(chartInput);
+    ui.graphicsView->setRenderHint(QPainter::Antialiasing);
+
+// ========== chart 2 ===================================
+
+    uint32_t maxOut = 0;
+    for (int i = 0; i < 769; i++) {
+        if (outputSet[i] > maxOut) {
+            maxOut = outputSet[i];
+        }
+    }
+    
+
+    for (int i = 0; i < 256; i++) {
+        *set0Out << outputSet[i + 512];
+        *set1Out << outputSet[i + 256];
+        *set2Out << outputSet[i];
+    }
+
+    set0Out->setColor(QColor(255, 0, 0));
+    set1Out->setColor(QColor(0, 255, 0));
+    set2Out->setColor(QColor(0, 0, 255));
+    seriesOut->append(set0Out);
+    seriesOut->append(set1Out);
+    seriesOut->append(set2Out);
+
+    chartOutput->addSeries(seriesOut);
+    chartOutput->setTitle("Histogram obrazu wyjsciowego");
+    chartOutput->setAnimationOptions(QChart::SeriesAnimations);
+
+    axisYOut->setRange(0, maxOut);
+    chartOutput->addAxis(axisYOut, Qt::AlignLeft);
+    axisXOut->setRange(0, 255);
+    axisXOut->setTickCount(17);
+    axisXOut->setLabelFormat("%i");
+    chartOutput->addAxis(axisXOut, Qt::AlignBottom);
+    chartOutput->legend()->setVisible(true);
+    chartOutput->legend()->setAlignment(Qt::AlignBottom);
+    seriesOut->setBarWidth(1.1);
+    ui.graphicsView_2->setChart(chartOutput);
+    ui.graphicsView_2->setRenderHint(QPainter::Antialiasing);
 }
 
 

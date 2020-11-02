@@ -41,6 +41,22 @@ private:
     bool isShownGraphic1 = false;
     bool isShownGraphic2 = false;
 
+    QBarSet* set0In = new QBarSet("Red");
+    QBarSet* set1In = new QBarSet("Green");
+    QBarSet* set2In = new QBarSet("Blue");
+    QBarSeries* seriesIn = new QBarSeries();
+    QValueAxis* axisXIn = new QValueAxis();
+    QValueAxis* axisYIn = new QValueAxis();
+
+    QBarSet* set0Out = new QBarSet("Red");
+    QBarSet* set1Out = new QBarSet("Green");
+    QBarSet* set2Out = new QBarSet("Blue");
+    QBarSeries* seriesOut = new QBarSeries();
+    QValueAxis* axisXOut = new QValueAxis();
+    QValueAxis* axisYOut = new QValueAxis();
+
+    void createCharts(uint32_t* inputSet, uint32_t* outputSet);
+
 private slots:
     void on_fileLoadPathButton_clicked();
     void on_fileSavePathButton_clicked();
