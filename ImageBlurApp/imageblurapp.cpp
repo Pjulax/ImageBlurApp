@@ -163,7 +163,7 @@ void ImageBlurApp::createCharts(uint32_t* inputSet, uint32_t* outputSet)
 // ========= chart 1 =========================
 
     uint32_t maxIn = 0;
-    for (int i = 0; i < 769; i++) {
+    for (int i = 0; i < 768; i++) {
         if (inputSet[i] > maxIn) {
             maxIn = inputSet[i];
         }
@@ -195,14 +195,14 @@ void ImageBlurApp::createCharts(uint32_t* inputSet, uint32_t* outputSet)
     chartInput->addAxis(axisXIn, Qt::AlignBottom);
     chartInput->legend()->setVisible(true);
     chartInput->legend()->setAlignment(Qt::AlignBottom);
-    seriesIn->setBarWidth(1.1);
+    seriesIn->setBarWidth(1);
     ui.graphicsView->setChart(chartInput);
     ui.graphicsView->setRenderHint(QPainter::Antialiasing);
 
 // ========== chart 2 ===================================
 
     uint32_t maxOut = 0;
-    for (int i = 0; i < 769; i++) {
+    for (int i = 0; i < 768; i++) {
         if (outputSet[i] > maxOut) {
             maxOut = outputSet[i];
         }
@@ -234,7 +234,7 @@ void ImageBlurApp::createCharts(uint32_t* inputSet, uint32_t* outputSet)
     chartOutput->addAxis(axisXOut, Qt::AlignBottom);
     chartOutput->legend()->setVisible(true);
     chartOutput->legend()->setAlignment(Qt::AlignBottom);
-    seriesOut->setBarWidth(1.1);
+    seriesOut->setBarWidth(1);
     ui.graphicsView_2->setChart(chartOutput);
     ui.graphicsView_2->setRenderHint(QPainter::Antialiasing);
 }
