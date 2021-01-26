@@ -30,7 +30,7 @@ private:
     QString bmpOutputFilepath;
     bool isLoadPathAssigned = false;
     bool isSavePathAssigned = false;
-    ImageHandler* image;
+    ImageHandler* image = nullptr;
     // computer threads count
     unsigned int processor_count;
     // time counter

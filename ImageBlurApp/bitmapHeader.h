@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 #include <iostream>
 #include <fstream>
 
@@ -7,6 +6,7 @@
 #define ONE_GIGABYTE 1 073 741 824
 #define PIXEL_ARRAY_SIZE_MAX 357 913 941 // 1/3 z 1 GB zaokr¹glona w dó³ do ca³oœci
 
+// class containing elementary data for bitmap header V1
 class BitmapHeader
 {
 public:
@@ -16,6 +16,6 @@ public:
 	uint16_t bitsPerPixel;
 	uint32_t width;
 	uint32_t height;
-
+	// It loads from file Bitmap Header and DIB Bitmap Header, saves offset to pixels data, bits per pixel, width and height of image
 	BitmapHeader(std::string filepath);
 };

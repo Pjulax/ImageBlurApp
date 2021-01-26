@@ -1,6 +1,7 @@
 // MathLibrary.cpp : Defines the exported functions for the DLL.
 #include "pch.h" // use stdafx.h in Visual Studio 2017 and earlier
 #include <utility>
+#include <iostream>
 #include <limits.h>
 #include "ImageBlurDLLCpp.h"
 
@@ -12,13 +13,52 @@ static unsigned index_;               // Current seq. position
 // Initialize a Fibonacci relation sequence
 // such that F(0) = a, F(1) = b.
 // This function must be called before any other function.
-void fibonacci_init(
-    const unsigned long long a,
-    const unsigned long long b)
+void blur_image(unsigned char* inputPixelArray, unsigned char* outputPixelArray,
+				const unsigned int arrayHeight, const unsigned int arrayWidth,
+				const bool start, const bool end)
 {
-    index_ = 0;
-    current_ = a;
-    previous_ = b; // see special case when initialized
+	uint32_t temp = 0;
+	int divider = 0;
+	for (int line = 0; line < arrayHeight; line++) {
+		for (int column = 0; column < arrayWidth * 3; column++) {
+			temp = inputPixelArray[line * arrayWidth * 3 + column];
+			divider++;
+			if (line > 0) {
+				temp += inputPixelArray[(line - 1) * arrayWidth * 3 + column];
+				divider++;
+				if (column > 2) {
+					temp += inputPixelArray[(line - 1) * arrayWidth * 3 + column - 3];
+					divider++;
+				}
+				if (column < arrayWidth * 3 - 4) {
+					temp += inputPixelArray[(line - 1) * arrayWidth * 3 + column + 3];
+					divider++;
+				}
+			}
+			if (column > 2) {
+				temp += inputPixelArray[line * arrayWidth * 3 + column - 3];
+				divider++;
+			}
+			if (column < arrayWidth * 3 - 4) {
+				temp += inputPixelArray[line * arrayWidth * 3 + column + 3];
+				divider++;
+			}
+			if (line < arrayHeight - 1) {
+				temp += inputPixelArray[(line + 1) * arrayWidth * 3 + column];
+				divider++;
+				if (column > 2) {
+					temp += inputPixelArray[(line + 1) * arrayWidth * 3 + column - 3];
+					divider++;
+				}
+				if (column < arrayWidth * 3 - 4) {
+					temp += inputPixelArray[(line + 1) * arrayWidth * 3 + column + 3];
+					divider++;
+				}
+			}
+			outputPixelArray[line * arrayWidth * 3 + column] = temp / divider;
+			divider = 0;
+		}
+	}
 }
 
 // Produce the next value in the sequence.

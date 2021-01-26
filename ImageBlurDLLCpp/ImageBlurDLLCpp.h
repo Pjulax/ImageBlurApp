@@ -19,8 +19,9 @@
 // Initialize a Fibonacci relation sequence
 // such that F(0) = a, F(1) = b.
 // This function must be called before any other function.
-extern "C" IMAGEBLURDLLCPP_API void fibonacci_init(
-    const unsigned long long a, const unsigned long long b);
+extern "C" IMAGEBLURDLLCPP_API void blur_image(unsigned char* inputPixelArray, unsigned char* outputPixelArray, 
+												const unsigned int arrayHeight, const unsigned int arrayWidth, 
+												const bool start, const bool end);
 
 // Produce the next value in the sequence.
 // Returns true on success and updates current value and index;

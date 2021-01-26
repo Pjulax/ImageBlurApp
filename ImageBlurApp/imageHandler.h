@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <Windows.h>
 #include "bitmapHeader.h"
 
 
@@ -22,10 +23,13 @@ private:
 
 public:
 	ImageHandler(std::string inputFilepath, std::string outputFilepath);
+	~ImageHandler();
+	// Saves V1 Bitmap Header to file
 	bool saveHeader();
+
 	bool saveImagePart(uint32_t startIndx, uint32_t endIndx);
 	bool loadImagePart();
-	void blurImage();
+	void blurImageDLLCPP();
 	uint32_t* inputHistogramCalc();
 	uint32_t* outputHistogramCalc();
 };
