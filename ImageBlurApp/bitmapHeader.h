@@ -3,8 +3,8 @@
 #include <fstream>
 
 #define BITMAP_HEADER_LENGTH 14
-#define ONE_GIGABYTE 1 073 741 824
-#define PIXEL_ARRAY_SIZE_MAX 357 913 941 // 1/3 z 1 GB zaokr¹glona w dó³ do ca³oœci
+#define ONE_GIGABYTE 1 073 741 826 // trzykrotnoœæ PIXEL_ARRAY_SIZE_MAX
+#define PIXEL_ARRAY_SIZE_MAX 357 913 942 // 1/3 z 1 GB zaokr¹glona w górê do ca³oœci
 
 // class containing elementary data for bitmap header V1
 class BitmapHeader

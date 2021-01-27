@@ -13,7 +13,7 @@ ImageBlurApp::ImageBlurApp(QWidget *parent)
     ui.cppButton->setDisabled(true);
     ui.asmButton->setDisabled(true);
     processor_count = std::thread::hardware_concurrency();
-    QString threadNum = QString::number(processor_count - 1);
+    QString threadNum = processor_count > 2 ? QString::number(processor_count - 1) : QString::number(1);
     QString threadText = QString("Optymalnie uzyj: ");
     threadText.push_back(threadNum);
     threadText.push_back(" watkow");
@@ -58,10 +58,11 @@ void ImageBlurApp::on_cppButton_clicked()
     ui.asmButton->setDisabled(true);
     performanceCounter.startCounting();
 
-    image = new ImageHandler(bmpInputFilepath.toStdString(), bmpOutputFilepath.toStdString());
+    image = new ImageHandler(bmpInputFilepath.toStdString(), bmpOutputFilepath.toStdString()); // 1. Pobieramy header
     image->loadImagePart();
-    uint32_t* inputBGR = image->inputHistogramCalc();
+    
     image->blurImageDLLCPP();
+    uint32_t* inputBGR = image->inputHistogramCalc();
     uint32_t* outputBGR = image->outputHistogramCalc();
     image->saveHeader();
     image->saveImagePart(0,0);
@@ -253,86 +254,3 @@ void ImageBlurApp::createCharts(uint32_t* inputSet, uint32_t* outputSet)
     ui.graphicsView_2->setChart(chartOutput);
     ui.graphicsView_2->setRenderHint(QPainter::Antialiasing);
 }
-
-
-//typedef void(CALLBACK* FIBONACCI_INIT)(const unsigned long long uParam1, const unsigned long long uParam2);
-//typedef bool(CALLBACK* FIBONACCI_NEXT)();
-//typedef unsigned long long(CALLBACK* FIBONACCI_CURRENT)();
-//typedef unsigned int(CALLBACK* FIBONACCI_INDEX)();
-//typedef int(CALLBACK* MYPROC1)(DWORD x, DWORD y);
-//
-//HINSTANCE hDLL;               // Handle to DLL
-//FIBONACCI_INIT initfun;    // Function pointer
-//FIBONACCI_NEXT nextfun;    // Function pointer
-//FIBONACCI_CURRENT currentfun;    // Function pointer
-//FIBONACCI_INDEX indexfun;    // Function pointer
-//MYPROC1 indexfun;    // Function pointer
-//const unsigned long long uParam1 = 1, uParam2 = 1;
-//unsigned long long number;
-//unsigned int index;
-
-//typedef int(CALLBACK* MYPROC1)(DWORD x, DWORD y);
-//
-//HINSTANCE hDLL;               // Handle to DLL
-//MYPROC1 procPtr;    // Function pointer
-//int retValue;
-//    hDLL = LoadLibraryA("ImageBlurDLLCpp");
-//    if (hDLL != NULL)
-//    {
-//        proc = (MYPROC1)GetProcAddress(hDLL, "MyProc1");
-//        if (!proc)
-//        {
-//            // handle the error
-//            FreeLibrary(hDLL);
-//            // here is place to some expection
-//        }
-//        else
-//        {
-//            // call the function
-//             retValue = procPtr(3,4);
-//        }
-//
-//        FreeLibrary(hDLL);
-//    }
-//}
-
-
-//void LoadAndCallSomeFunction()
-//{
-//    HINSTANCE hDLL;               // Handle to DLL
-//    FIBONACCI_INIT initfun;    // Function pointer
-//    FIBONACCI_NEXT nextfun;    // Function pointer
-//    FIBONACCI_CURRENT currentfun;    // Function pointer
-//    FIBONACCI_INDEX indexfun;    // Function pointer
-//    const unsigned long long uParam1 = 1, uParam2 = 1;
-//
-//    hDLL = LoadLibraryA("ImageBlurDLLCpp");
-//    if (hDLL != NULL)
-//    {
-//        initfun = (FIBONACCI_INIT)GetProcAddress(hDLL, "fibonacci_init");
-//        nextfun = (FIBONACCI_NEXT)GetProcAddress(hDLL, "fibonacci_next");
-//        currentfun = (FIBONACCI_CURRENT)GetProcAddress(hDLL, "fibonacci_current");
-//        indexfun = (FIBONACCI_INDEX)GetProcAddress(hDLL, "fibonacci_index");
-//        if (!initfun || !nextfun || !currentfun || !indexfun)
-//        {
-//            // handle the error
-//            FreeLibrary(hDLL);
-//            // here is place to some expection
-//        }
-//        else
-//        {
-//            // call the function
-//            initfun(uParam1, uParam2);
-//            unsigned long long number;
-//            unsigned int index;
-//            do {
-//                index = indexfun();
-//                number = currentfun();
-//                
-//            } while (nextfun());
-//
-//        }
-//
-//        FreeLibrary(hDLL);
-//    }
-//}

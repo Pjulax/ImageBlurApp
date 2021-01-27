@@ -5,30 +5,37 @@ ImageHandler::ImageHandler(std::string inputFilepath, std::string outputFilepath
 {
 	this->inputFilepath = inputFilepath;
 	this->outputFilepath = outputFilepath;
+
 	this->inputPixelArray = nullptr;
 	this->outputPixelArray = nullptr;
 	this->pixelArrayHeight = 0;
 	this->pixelArrayStartHeight = 0;
-	this->paddingNum = uint16_t(4 - ((bitmapHeader.width*3)%4));
+	this->paddingNum = uint16_t(4 - ((bitmapHeader.width * 3) % 4));
 	this->isHeaderSaved = false;
 }
 
 ImageHandler::~ImageHandler()
 {
 	delete[] this->inputPixelArray;
+	delete[] this->outputPixelArray;
+}
+
+void ImageHandler::calculateFragmentSize() {
+
 }
 
 // poprawiæ na wczytywanie kolejnych fragmentów obrazu
 bool ImageHandler::loadImagePart()
 {
-	inputPixelArray = new unsigned char[(bitmapHeader.width * bitmapHeader.height * 3)];
+	// ogarn¹æ zapis punktu w pliku gdzie skoñczy³em wczytywaæ by cofn¹æ siê o linie i wczytywaæ nastêpnie od niej znowu
+	inputPixelArray = new unsigned char[(bitmapHeader.width + 2) * (bitmapHeader.height + 2) * 3] { 0 };
 	std::ifstream image(inputFilepath, std::ifstream::binary);
 	if (image.is_open())
 	{
-		image.seekg(bitmapHeader.imageDataOffset);
-		for (int i = 0; i < bitmapHeader.height; i++) {
-			image.read((char*)inputPixelArray + (i * bitmapHeader.width*3), (bitmapHeader.width * 3));
-			if(!image.eof() && paddingNum < 4)
+		image.seekg(bitmapHeader.imageDataOffset); // tu przechodze do odpowiedniego miejsca w pliku
+		for (int i = 1; i <= bitmapHeader.height; i++) {
+			image.read((char*)inputPixelArray + (i * (bitmapHeader.width + 2) * 3) + 3, (bitmapHeader.width * 3));
+			if(!image.eof() && paddingNum < 4) // pominiêcie paddingu
 				image.seekg(paddingNum, std::ios::cur);
 		}
 		image.close();
@@ -60,7 +67,7 @@ void ImageHandler::blurImageDLLCPP() {
 		else
 		{
 			// call the function
-			procPtr(inputPixelArray, outputPixelArray, bitmapHeader.height, bitmapHeader.width, true, true);
+			procPtr(inputPixelArray, outputPixelArray, bitmapHeader.height, bitmapHeader.width*3, true, true);
 		}
 
 		FreeLibrary(hDLL);
@@ -134,49 +141,19 @@ uint32_t* ImageHandler::histogramCalc(unsigned char* pixelArray)
 	return nullptr;
 }
 
+/*
+1. Wczytuje header
+2. Sprawdzam ile razy musze czytaæ obraz (PIXEL_ARRAY_SIZE_MAX / width) to height mo¿liwa na raz, dzielimy przez 3 bo 3 kolory
+3. Sprawdzamy thready ile ustawione
+4. Wczytujemy kawa³ek dodaj¹c:
+	a) Gdy to pocz¹tek - width+2 czarnych pikseli na pocz¹tku
+	b) Zawsze - +1 na pocz¹tku, +1 na koñcu wiersza
+	c) Gdy to koniec - width+2 czarnych pikseli na koñcu	
+5. Rozdzielamy ka¿d¹ partiê na thready, uruchamiamy i ³¹czymy
+6. Zapisujemy fragment
+7. Z ka¿dego fragmentu zbieramy histogram z Input i Output Array
+8. 
 
-//void ImageHandler::blurImage()
-//{
-//	uint32_t temp = 0;
-//	int divider = 0;
-//	for (int line = 0; line < bitmapHeader.height; line++) {
-//		for (int column = 0; column < bitmapHeader.width * 3; column++) {
-//			temp = inputPixelArray[line * bitmapHeader.width * 3 + column];
-//			divider++;
-//			if (line > 0) {
-//				temp += inputPixelArray[(line - 1) * bitmapHeader.width * 3 + column];
-//				divider++;
-//				if (column > 2) {
-//					temp += inputPixelArray[(line - 1) * bitmapHeader.width * 3 + column - 3];
-//					divider++;
-//				}
-//				if (column < bitmapHeader.width * 3 - 4) {
-//					temp += inputPixelArray[(line - 1) * bitmapHeader.width * 3 + column + 3];
-//					divider++;
-//				}
-//			}
-//			if (column > 2) {
-//				temp += inputPixelArray[line * bitmapHeader.width * 3 + column - 3];
-//				divider++;
-//			}
-//			if (column < bitmapHeader.width * 3 - 4) {
-//				temp += inputPixelArray[line * bitmapHeader.width * 3 + column + 3];
-//				divider++;
-//			}
-//			if (line < bitmapHeader.height - 1) {
-//				temp += inputPixelArray[(line + 1) * bitmapHeader.width * 3 + column];
-//				divider++;
-//				if (column > 2) {
-//					temp += inputPixelArray[(line + 1) * bitmapHeader.width * 3 + column - 3];
-//					divider++;
-//				}
-//				if (column < bitmapHeader.width * 3 - 4) {
-//					temp += inputPixelArray[(line + 1) * bitmapHeader.width * 3 + column + 3];
-//					divider++;
-//				}
-//			}
-//			outputPixelArray[line * bitmapHeader.width * 3 + column] = temp / divider;
-//			divider = 0;
-//		}
-//	}
-//}
+
+
+*/

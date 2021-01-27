@@ -24,6 +24,7 @@ private:
 public:
 	ImageHandler(std::string inputFilepath, std::string outputFilepath);
 	~ImageHandler();
+	void calculateFragmentSize();
 	// Saves V1 Bitmap Header to file
 	bool saveHeader();
 
