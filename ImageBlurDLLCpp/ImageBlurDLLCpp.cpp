@@ -13,9 +13,15 @@
 * in
 */
 void blur_image(unsigned char* inputPixelArray, unsigned char* outputPixelArray,
-				const unsigned int arrayHeight, const unsigned int arrayWidth,
-				const bool start, const bool end)
+				const unsigned int arrayHeight, const unsigned int arrayWidth)
 {
+	//uint32_t temp = 0;
+	//for (int row = 0; row < arrayHeight; row++) {
+	//	for (int column = 0; column < arrayWidth; column++) {
+	//	temp = inputPixelArray[(row + 1) * (arrayWidth + 6) + column + 3];
+	//	outputPixelArray[row * arrayWidth + column] = (unsigned char)temp;
+	//	}
+	//}
 	uint32_t temp = 0;
 	for (int row = 0; row < arrayHeight; row++) {
 		for (int column = 0; column < arrayWidth; column++) {
@@ -31,7 +37,7 @@ void blur_image(unsigned char* inputPixelArray, unsigned char* outputPixelArray,
 			outputPixelArray[row * arrayWidth + column] = (unsigned char) temp;
 		}
 	}
-	
+
 	/*
 	int divider = 0;
 	for (int line = 0; line < arrayHeight; line++) {

@@ -2,7 +2,6 @@
 #include "imageblurapp.h"
 #include "stdafx.h"
 #include <thread>
-
 #include "imageHandler.h"
 #include "windows.h"
 
@@ -18,7 +17,7 @@ ImageBlurApp::ImageBlurApp(QWidget *parent)
     threadText.push_back(threadNum);
     threadText.push_back(" watkow");
     ui.threadLabel->setText(threadText);
-    performanceCounter = PerformanceCounter();
+    //performanceCounter = PerformanceCounter();
 }
 
 void ImageBlurApp::on_fileLoadPathButton_clicked()
@@ -56,80 +55,42 @@ void ImageBlurApp::on_fileSavePathButton_clicked()
 void ImageBlurApp::on_cppButton_clicked()
 {
     ui.asmButton->setDisabled(true);
-    performanceCounter.startCounting();
+    //performanceCounter.startCounting();
 
     image = new ImageHandler(bmpInputFilepath.toStdString(), bmpOutputFilepath.toStdString()); // 1. Pobieramy header
-    image->loadImagePart();
-    
-    image->blurImageDLLCPP();
-    uint32_t* inputBGR = image->inputHistogramCalc();
-    uint32_t* outputBGR = image->outputHistogramCalc();
-    image->saveHeader();
-    image->saveImagePart(0,0);
+
+    uint32_t* inputBGR = new uint32_t[768]{ 0 }; 
+    uint32_t* outputBGR = new uint32_t[768]{ 0 }; 
+
+    std::string time = image->processImage(ui.processorSpinBox->value(), inputBGR, outputBGR, "Cpp");
 
     createCharts(inputBGR, outputBGR);
 
-    performanceCounter.stopCounting();
-    if (performanceCounter.calculateTime()) {
-        ui.cppTimeLabel->setText(QString().fromStdString(performanceCounter.getTime()));
-    }
+    //performanceCounter.stopCounting();
+    //if (performanceCounter.calculateTime()) {
+        ui.cppTimeLabel->setText(QString().fromStdString(time));
+    //}
     delete image;
     ui.asmButton->setDisabled(false);
 }
 
 void ImageBlurApp::on_asmButton_clicked()
 {
-    //typedef int(CALLBACK* MYPROC1)(DWORD x, DWORD y);
-    //typedef int(CALLBACK* MYPROC2)(DWORD x, DWORD y);
-
-    //HINSTANCE hDLL;               // Handle to DLL
-    //MYPROC1 procPtr;    // Function pointer
-    //MYPROC1 procPtr2;    // Function pointer
-    //int retValue;
-    //hDLL = LoadLibraryA("ImageBlurDLLAsm");
-    //if (hDLL != NULL)
-    //{
-    //    procPtr = (MYPROC1)GetProcAddress(hDLL, "MyProc1");
-    //    procPtr2 = (MYPROC2)GetProcAddress(hDLL, "MyProc2");
-    //    if (!procPtr || !procPtr2)
-    //    {
-    //        // handle the error
-    //        FreeLibrary(hDLL);
-    //        // here is place to some expection
-    //    }
-    //    else
-    //    {
-    //        // call the function
-    //        retValue = procPtr(3, 4);
-    //        retValue = procPtr2(4, 3);
-    //    }
-
-    //    FreeLibrary(hDLL);
-    //}
-
-    //performanceCounter.stopCounting();
-    //if (performanceCounter.calculateTime()) {
-    //    ui.cppTimeLabel->setText(QString().fromStdString(performanceCounter.getTime()));
-    //}
-    ////ui.cppButton->setDisabled(true);
-
     ui.cppButton->setDisabled(true);
-    performanceCounter.startCounting();
 
-    image = new ImageHandler(bmpInputFilepath.toStdString(), bmpOutputFilepath.toStdString());
-    image->loadImagePart();
-    uint32_t* inputBGR = image->inputHistogramCalc();
-//    image->blurImageDLLASM();
-    uint32_t* outputBGR = image->outputHistogramCalc();
-    image->saveHeader();
-    image->saveImagePart(0, 0);
+    image = new ImageHandler(bmpInputFilepath.toStdString(), bmpOutputFilepath.toStdString()); // 1. Pobieramy header
+
+    uint32_t* inputBGR = new uint32_t[768]{ 0 };
+    uint32_t* outputBGR = new uint32_t[768]{ 0 };
+
+    std::string time = image->processImage(ui.processorSpinBox->value(), inputBGR, outputBGR, "Asm");
 
     createCharts(inputBGR, outputBGR);
 
-    performanceCounter.stopCounting();
-    if (performanceCounter.calculateTime()) {
-        ui.asmTimeLabel->setText(QString().fromStdString(performanceCounter.getTime()));
-    }
+
+//    if (performanceCounter.calculateTime()) {
+        ui.asmTimeLabel->setText(QString().fromStdString(time));
+//    }
     delete image;
     ui.cppButton->setDisabled(false);
 }

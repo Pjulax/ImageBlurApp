@@ -31,7 +31,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="..\ImageBlurDLLCpp\AsmLib.asm">
+    <MASM Include="AsmLib.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>

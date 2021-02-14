@@ -15,6 +15,5 @@ public:
 	PerformanceCounter();
 	bool startCounting();
 	bool stopCounting();
-	bool calculateTime();
-	std::string getTime();
+	std::string calculateTime();
 };

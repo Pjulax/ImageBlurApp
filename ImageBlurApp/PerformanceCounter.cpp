@@ -26,6 +26,9 @@ bool PerformanceCounter::stopCounting()
 {
 	if (QueryPerformanceCounter(&TemporaryStorage)) {
 		EndingTime = TemporaryStorage.QuadPart;
+		ElapsedMicroseconds += (EndingTime - StartingTime);
+		this->StartingTime = 0;
+		this->EndingTime = 0;
 		return true;
 	}
 	return false;
@@ -33,13 +36,12 @@ bool PerformanceCounter::stopCounting()
 
 // funkcja oblicza wartoœæ godzin, minut, sekund, milisekund i mikrosekund,
 // a nastêpnie zamienia na string w formacie HH:MM:SS:mmm:uuu
-bool PerformanceCounter::calculateTime()
+std::string PerformanceCounter::calculateTime()
 {
-	ElapsedMicroseconds = EndingTime - StartingTime;
 	ElapsedMicroseconds *= 1000000;
 	ElapsedMicroseconds /= Frequency;
 	if (ElapsedMicroseconds >= 0) {
-		long long hour, min, sec, milisec, microsec, lastRest;
+		long long hour, min, sec, milisec, microsec;
 		hour = (ElapsedMicroseconds - (ElapsedMicroseconds % 3600000000)) / 3600000000;
 		min = ((ElapsedMicroseconds % 3600000000) - (ElapsedMicroseconds % 60000000)) / 60000000;
 		sec = ((ElapsedMicroseconds % 60000000) - (ElapsedMicroseconds % 1000000)) / 1000000;
@@ -65,12 +67,9 @@ bool PerformanceCounter::calculateTime()
 
 		FormattedTime = "Czas: " + sHour + ":" + sMin + ":" + sSec + ":" + sMilisec + ":" + sMicrosec;
 
-		return true;
-	}
-	return false;
-}
+		ElapsedMicroseconds = 0;
 
-std::string PerformanceCounter::getTime()
-{
-	return FormattedTime;
+		return FormattedTime;
+	}
+	return "Nie wyliczono czasu";
 }

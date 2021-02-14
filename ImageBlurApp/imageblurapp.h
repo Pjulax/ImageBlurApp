@@ -33,8 +33,8 @@ private:
     ImageHandler* image = nullptr;
     // computer threads count
     unsigned int processor_count;
-    // time counter
-    PerformanceCounter performanceCounter;
+    //// time counter
+    //PerformanceCounter performanceCounter;
     // charts for histogram
     QChart* chartInput = new QChart();
     QChart* chartOutput = new QChart();

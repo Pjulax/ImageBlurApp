@@ -1,4 +1,3 @@
 LIBRARY "ImageBlurDLLAsm"
 EXPORTS
-MyProc1
-MyProc2
+blur_image
