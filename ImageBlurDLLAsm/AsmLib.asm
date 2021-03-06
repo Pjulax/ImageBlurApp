@@ -118,14 +118,16 @@ blur_image proc
         pshufd xmm1, xmm1, 00100100b    ; pix#4 0 0 pix#4 - rozmieszczamy elementy XMM1 wed³ug maski
 ; pix#5
         mov rbx, r12                    ; kopiujemy przesuniêcie komórki pocz¹tkowej
-        add rbx, 3                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
+        add rbx, r9                     ; dodajemy przesuniêcie o wiersz obrazu
+        add rbx, 6                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
         mov al, [rcx + rbx]             ; kopiujemy do AL wartoœæ bajta z tablicy wejœciowej
         movzx eax, al                   ; wykonujemy zero extend - rozszerzamy 8 bitow¹ wartoœæ do 32 bitowej
         cvtsi2ss xmm1, eax              ; podajemy wartoœæ z EAX z konwersj¹ na Single precision float do XMM1
         pshufd xmm1, xmm1, 11000100b    ; pix#4 pix#5 0 pix#5 - rozmieszczamy elementy XMM1 wed³ug maski
 ; pix#6
         mov rbx, r12                    ; kopiujemy przesuniêcie komórki pocz¹tkowej
-        add rbx, 3                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
+        add rbx, r9                     ; dodajemy przesuniêcie o wiersz obrazu
+        add rbx, 6                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
         mov al, [rcx + rbx]             ; kopiujemy do AL wartoœæ bajta z tablicy wejœciowej
         movzx eax, al                   ; wykonujemy zero extend - rozszerzamy 8 bitow¹ wartoœæ do 32 bitowej
         cvtsi2ss xmm1, eax              ; podajemy wartoœæ z EAX z konwersj¹ na Single precision float do XMM1
@@ -145,14 +147,18 @@ blur_image proc
         pshufd xmm2, xmm2, 00100100b    ; pix#7 0 0 pix#7 - rozmieszczamy elementy XMM2 wed³ug maski
 ; pix#8
         mov rbx, r12                    ; kopiujemy przesuniêcie komórki pocz¹tkowej
-        add rbx, 3                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
+        add rbx, r9                     ; dodajemy przesuniêcie o wiersz obrazu
+        add rbx, r9                     ; dodajemy przesuniêcie o drugi wiersz obrazu
+        add rbx, 12                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
         mov al, [rcx + rbx]             ; kopiujemy do AL wartoœæ bajta z tablicy wejœciowej
         movzx eax, al                   ; wykonujemy zero extend - rozszerzamy 8 bitow¹ wartoœæ do 32 bitowej
         cvtsi2ss xmm2, eax              ; podajemy wartoœæ z EAX z konwersj¹ na Single precision float do XMM2
         pshufd xmm2, xmm2, 11000100b    ; pix#7 pix#8 0 pix#8 - rozmieszczamy elementy XMM2 wed³ug maski
 ; pix#9
         mov rbx, r12                    ; kopiujemy przesuniêcie komórki pocz¹tkowej
-        add rbx, 3                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
+        add rbx, r9                     ; dodajemy przesuniêcie o wiersz obrazu
+        add rbx, r9                     ; dodajemy przesuniêcie o drugi wiersz obrazu
+        add rbx, 12                      ; dodajemy przesuniêcie o piksel do kolejnej komórki
         mov al, [rcx + rbx]             ; kopiujemy do AL wartoœæ bajta z tablicy wejœciowej
         movzx eax, al                   ; wykonujemy zero extend - rozszerzamy 8 bitow¹ wartoœæ do 32 bitowej
         cvtsi2ss xmm2, eax              ; podajemy wartoœæ z EAX z konwersj¹ na Single precision float do XMM2

@@ -12,7 +12,7 @@ ImageBlurApp::ImageBlurApp(QWidget *parent)
     ui.cppButton->setDisabled(true);
     ui.asmButton->setDisabled(true);
     processor_count = std::thread::hardware_concurrency();
-    QString threadNum = processor_count > 2 ? QString::number(processor_count - 1) : QString::number(1);
+    QString threadNum = QString::number(processor_count);
     QString threadText = QString("Optymalnie uzyj: ");
     threadText.push_back(threadNum);
     threadText.push_back(" watkow");
